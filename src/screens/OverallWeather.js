@@ -1,75 +1,71 @@
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
-import React, { useEffect, useState } from "react";
-import fetchWeatherData from "../apis/fetchWeatherData";
+import React, { useEffect } from "react";
 import MyIcon from "../UI/MyIcon";
 import CurrentWeatherFeature from "../UI/CurrentWeatherFeature";
+import useStore from "../store/useStore";
 
 const OverallWeather = () => {
-  const [fetchedData, setFetchedData] = useState("");
+  const fetchWeatherData = useStore((state) => state.fetchWeather);
+  const fetchedData = useStore((state) => state.weatherData);
   useEffect(() => {
-    const fetchData = async () => {
-      const fetchedData = await fetchWeatherData("Mostar");
-      if (fetchedData) {
-        setFetchedData(fetchedData);
-      }
-    };
-    fetchData();
+    fetchWeatherData("Mostar");
   }, []);
-
   return (
     fetchedData && (
       <>
         <View>
           <ImageBackground
             source={
-              fetchedData.current.is_day === 1
+              fetchedData?.current?.is_day === 1
                 ? require("../../assets/day.jpg")
                 : require("../../assets/night.jpg")
             }
             style={{ height: "100%" }}
           >
             <View style={styles.currentContainer}>
-              <MyIcon iconName={fetchedData.current.condition.text} />
-              <Text style={styles.placeName}>{fetchedData.location.name}</Text>
+              <MyIcon iconName={fetchedData?.current?.condition?.text} />
+              <Text style={styles.placeName}>
+                {fetchedData?.location?.name}
+              </Text>
               <Text
                 style={[
                   styles.weatherText,
-                  fetchedData.current.is_day === 1
+                  fetchedData?.current?.is_day === 1
                     ? styles.fontBlack
                     : styles.fontWhite,
                 ]}
               >
-                {fetchedData.current.condition.text}
+                {fetchedData?.current?.condition?.text}
               </Text>
               <Text style={styles.temperature}>
-                {fetchedData.current.temp_c}°
+                {fetchedData?.current?.temp_c}°
               </Text>
               <View style={styles.weatherFeatures}>
                 <CurrentWeatherFeature
                   iconName="sun-wireless"
-                  text={`UV  ${fetchedData.current.uv}`}
+                  text={`UV  ${fetchedData?.current?.uv}`}
                   color="red"
                 />
                 <CurrentWeatherFeature
                   iconName="temperature-celsius"
                   text={
-                    fetchedData.forecast.forecastday[0].day.mintemp_c +
+                    fetchedData?.forecast?.forecastday[0]?.day.mintemp_c +
                     "°" +
                     " / " +
-                    fetchedData.forecast.forecastday[0].day.maxtemp_c +
+                    fetchedData?.forecast?.forecastday[0]?.day.maxtemp_c +
                     "°"
                   }
                   color="white"
                 />
                 <CurrentWeatherFeature
                   iconName="windsock"
-                  text={fetchedData.current.wind_kph + " kph"}
+                  text={fetchedData?.current?.wind_kph + " kph"}
                   color={"white"}
                 />
                 <CurrentWeatherFeature
                   iconName="eye"
-                  text={fetchedData.current.vis_km + " km"}
-                  color={fetchedData.current.is_day === 1 ? "black" : "white"}
+                  text={fetchedData?.current?.vis_km + " km"}
+                  color={fetchedData?.current?.is_day === 1 ? "black" : "white"}
                 />
               </View>
             </View>
